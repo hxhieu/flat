@@ -56,8 +56,7 @@ namespace flat2d {
 		} else {
 			window = new Window(title, screenWidth, screenHeight);
 		}
-		if (!window->init())
-		{
+		if (!window->init()) {
 			return false;
 		}
 
@@ -121,14 +120,12 @@ namespace flat2d {
 	                         int screenWidth,
 	                         int screenHeight)
 	{
-		if (!initSDL(name, screenWidth, screenHeight))
-		{
+		if (!initSDL(name, screenWidth, screenHeight)) {
 			return -1;
 		}
 
 		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-		if (!initContainers())
-		{
+		if (!initContainers()) {
 			return -1;
 		}
 

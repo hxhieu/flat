@@ -12,11 +12,11 @@ namespace flat2d {
 	 */
 	class Mixer
 	{
-	private:
+	  private:
 		// std::map<int, Mix_Chunk*> effects;
 		// std::map<int, Mix_Music*> music;
 
-	public:
+	  public:
 		~Mixer();
 
 		// /**
