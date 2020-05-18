@@ -1,13 +1,9 @@
 #include "Square.h"
 
-namespace flat2d
-{
+namespace flat2d {
 	bool Square::containsPoint(int px, int py) const
 	{
-		return px >= x
-			&& px <= x + w
-			&& py >= y
-			&& py <= y + h;
+		return px >= x && px <= x + w && py >= y && py <= y + h;
 	}
 
 	bool Square::operator<(const Square& s) const
@@ -24,8 +20,5 @@ namespace flat2d
 		return w == s.w && h == s.h && !(*this < s) && !(s < *this);
 	}
 
-	bool Square::operator!=(const Square& s) const
-	{
-		return !(*this == s);
-	}
+	bool Square::operator!=(const Square& s) const { return !(*this == s); }
 } // namespace flat2d

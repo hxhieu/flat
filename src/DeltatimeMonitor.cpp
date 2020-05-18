@@ -1,9 +1,7 @@
-#include <SDL.h>
 #include "DeltatimeMonitor.h"
+#include <SDL.h>
 
-
-namespace flat2d
-{
+namespace flat2d {
 	void DeltatimeMonitor::updateDeltaTime()
 	{
 		if (currentTime == 0) {
@@ -16,8 +14,5 @@ namespace flat2d
 		deltaTime = (currentTime - oldTime) / 1000.0f;
 	}
 
-	float DeltatimeMonitor::getDeltaTime() const
-	{
-		return deltaTime;
-	}
+	float DeltatimeMonitor::getDeltaTime() const { return deltaTime; }
 } // namespace flat2d

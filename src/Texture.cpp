@@ -1,10 +1,9 @@
-#include <iostream>
-#include <string>
 #include "Texture.h"
 #include "MediaUtil.h"
+#include <iostream>
+#include <string>
 
-namespace flat2d
-{
+namespace flat2d {
 	Texture::~Texture()
 	{
 		freeFont();
@@ -27,7 +26,7 @@ namespace flat2d
 		}
 	}
 
-	bool Texture::loadFromFile(std::string path, SDL_Renderer *renderer)
+	bool Texture::loadFromFile(std::string path, SDL_Renderer* renderer)
 	{
 		freeTexture();
 
@@ -57,19 +56,24 @@ namespace flat2d
 		return font != nullptr;
 	}
 
-	bool Texture::loadFromRenderedText(std::string text, SDL_Color color, SDL_Renderer *renderer)
+	bool Texture::loadFromRenderedText(std::string text,
+	                                   SDL_Color color,
+	                                   SDL_Renderer* renderer)
 	{
 		freeTexture();
 
-		SDL_Surface* imgSurface = TTF_RenderText_Solid(font, text.c_str(), color);
+		SDL_Surface* imgSurface =
+		  TTF_RenderText_Solid(font, text.c_str(), color);
 		if (imgSurface == nullptr) {
-			std::cerr << "Failed to load text image: " << TTF_GetError() << std::endl;
+			std::cerr << "Failed to load text image: " << TTF_GetError()
+			          << std::endl;
 			return false;
 		}
 
 		texture = SDL_CreateTextureFromSurface(renderer, imgSurface);
 		if (texture == nullptr) {
-			std::cerr << "Unable to create text texture: " << SDL_GetError() << std::endl;
+			std::cerr << "Unable to create text texture: " << SDL_GetError()
+			          << std::endl;
 		}
 
 		this->w = imgSurface->w;
@@ -80,23 +84,23 @@ namespace flat2d
 		return texture != nullptr;
 	}
 
-	void Texture::render(SDL_Renderer *renderer, const SDL_Rect* clip, const SDL_Rect* pos) const
+	void Texture::render(SDL_Renderer* renderer,
+	                     const SDL_Rect* clip,
+	                     const SDL_Rect* pos) const
 	{
 		if (texture == nullptr) {
 			return;
 		}
 
 		if (flip != SDL_FLIP_NONE || rotation != 0) {
-			SDL_RenderCopyEx(renderer, texture, clip, pos, rotation, &rotationPoint, flip);
+			SDL_RenderCopyEx(
+			  renderer, texture, clip, pos, rotation, &rotationPoint, flip);
 		} else {
 			SDL_RenderCopy(renderer, texture, clip, pos);
 		}
 	}
 
-	double Texture::getRotation() const
-	{
-		return rotation;
-	}
+	double Texture::getRotation() const { return rotation; }
 
 	void Texture::setRotation(double angle, SDL_Point point)
 	{
@@ -104,13 +108,7 @@ namespace flat2d
 		this->rotationPoint = point;
 	}
 
-	SDL_RendererFlip Texture::getFlip() const
-	{
-		return flip;
-	}
+	SDL_RendererFlip Texture::getFlip() const { return flip; }
 
-	void Texture::setFlip(SDL_RendererFlip flip)
-	{
-		this->flip = flip;
-	}
+	void Texture::setFlip(SDL_RendererFlip flip) { this->flip = flip; }
 } // namespace flat2d

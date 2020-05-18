@@ -1,15 +1,14 @@
 #include "QuadTree.h"
 #include <SDL.h>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 #include <vector>
 
-namespace flat2d
-{
-	int QuadTree::getNodeIndexFor(const Entity *e) const
+namespace flat2d {
+	int QuadTree::getNodeIndexFor(const Entity* e) const
 	{
-		int dw = bounds.getXpos() + (bounds.getWidth()/2);
-		int dh = bounds.getYpos() + (bounds.getHeight()/2);
+		int dw = bounds.getXpos() + (bounds.getWidth() / 2);
+		int dh = bounds.getYpos() + (bounds.getHeight() / 2);
 		bool left = false;
 		bool right = false;
 
@@ -39,29 +38,18 @@ namespace flat2d
 
 	void QuadTree::split()
 	{
-		int dw = bounds.getWidth()/2;
-		int dh = bounds.getHeight()/2;
+		int dw = bounds.getWidth() / 2;
+		int dh = bounds.getHeight() / 2;
 
-		nodes.push_back(new QuadTree(Square(
-					bounds.getXpos(),
-					bounds.getYpos(),
-					dw,
-					dh), depth + 1));
-		nodes.push_back(new QuadTree(Square(
-					bounds.getXpos() + dw,
-					bounds.getYpos(),
-					dw,
-					dh), depth + 1));
-		nodes.push_back(new QuadTree(Square(
-					bounds.getXpos(),
-					bounds.getYpos() + dh,
-					dw,
-					dh), depth + 1));
-		nodes.push_back(new QuadTree(Square(
-					bounds.getXpos() + dw,
-					bounds.getYpos() + dh,
-					dw,
-					dh), depth + 1));
+		nodes.push_back(new QuadTree(
+		  Square(bounds.getXpos(), bounds.getYpos(), dw, dh), depth + 1));
+		nodes.push_back(new QuadTree(
+		  Square(bounds.getXpos() + dw, bounds.getYpos(), dw, dh), depth + 1));
+		nodes.push_back(new QuadTree(
+		  Square(bounds.getXpos(), bounds.getYpos() + dh, dw, dh), depth + 1));
+		nodes.push_back(new QuadTree(
+		  Square(bounds.getXpos() + dw, bounds.getYpos() + dh, dw, dh),
+		  depth + 1));
 
 		std::vector<Entity*> tempObjects;
 		for (auto it = objects.begin(); it != objects.end(); ++it) {
@@ -78,7 +66,7 @@ namespace flat2d
 		}
 	}
 
-	void QuadTree::insert(Entity *e)
+	void QuadTree::insert(Entity* e)
 	{
 		if (nodes.empty()) {
 			objects.push_back(e);
@@ -128,14 +116,16 @@ namespace flat2d
 		return d;
 	}
 
-	void QuadTree::retrieve(std::vector<Entity*> *returnEntities, const Entity *entity) const
+	void QuadTree::retrieve(std::vector<Entity*>* returnEntities,
+	                        const Entity* entity) const
 	{
 		int index = getNodeIndexFor(entity);
 		if (index != -1 && !nodes.empty()) {
 			nodes[index]->retrieve(returnEntities, entity);
 		}
 
-		returnEntities->insert(returnEntities->end(), objects.begin(), objects.end());
+		returnEntities->insert(
+		  returnEntities->end(), objects.begin(), objects.end());
 	}
 
 } // namespace flat2d

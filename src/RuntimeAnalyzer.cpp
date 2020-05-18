@@ -1,17 +1,22 @@
-#include <string>
-#include <iostream>
 #include "RuntimeAnalyzer.h"
+#include <iostream>
+#include <string>
 
-namespace flat2d
-{
-	RuntimeAnalyzer::IntMap RuntimeAnalyzer::callCount =
-		[] { RuntimeAnalyzer::IntMap ret; return ret; }();
+namespace flat2d {
+	RuntimeAnalyzer::IntMap RuntimeAnalyzer::callCount = [] {
+		RuntimeAnalyzer::IntMap ret;
+		return ret;
+	}();
 
-	RuntimeAnalyzer::IntMap RuntimeAnalyzer::totalTime =
-		[] { RuntimeAnalyzer::IntMap ret; return ret; }();
+	RuntimeAnalyzer::IntMap RuntimeAnalyzer::totalTime = [] {
+		RuntimeAnalyzer::IntMap ret;
+		return ret;
+	}();
 
-	RuntimeAnalyzer::FloatMap RuntimeAnalyzer::avgTime =
-		[] { RuntimeAnalyzer::FloatMap ret; return ret; }();
+	RuntimeAnalyzer::FloatMap RuntimeAnalyzer::avgTime = [] {
+		RuntimeAnalyzer::FloatMap ret;
+		return ret;
+	}();
 
 	void RuntimeAnalyzer::addCall(std::string func, int time)
 	{
@@ -23,7 +28,9 @@ namespace flat2d
 
 		callCount[func] = callCount[func] + 1;
 		totalTime[func] = totalTime[func] + time;
-		avgTime[func] = (static_cast<float>(totalTime[func]) / static_cast<float>(callCount[func])) / 1000;
+		avgTime[func] = (static_cast<float>(totalTime[func]) /
+		                 static_cast<float>(callCount[func])) /
+		                1000;
 	}
 
 	const RuntimeAnalyzer::IntMap* RuntimeAnalyzer::getTotalTimes()

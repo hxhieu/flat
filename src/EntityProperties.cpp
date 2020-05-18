@@ -1,9 +1,7 @@
-#include <iostream>
 #include "EntityProperties.h"
+#include <iostream>
 
-
-namespace flat2d
-{
+namespace flat2d {
 	void EntityProperties::setCollisionProperty(CollisionProperty prop)
 	{
 		this->collisionProperty = prop;
@@ -54,10 +52,7 @@ namespace flat2d
 		}
 	}
 
-	float EntityProperties::getXvel() const
-	{
-		return xvel;
-	}
+	float EntityProperties::getXvel() const { return xvel; }
 
 	void EntityProperties::setYvel(float v)
 	{
@@ -67,62 +62,37 @@ namespace flat2d
 		}
 	}
 
-	void EntityProperties::setDepth(int depth)
-	{
-		this->z = depth;
-	}
+	void EntityProperties::setDepth(int depth) { this->z = depth; }
 
-	int EntityProperties::getDepth() const
-	{
-		return z;
-	}
+	int EntityProperties::getDepth() const { return z; }
 
-	float EntityProperties::getYvel() const
-	{
-		return yvel;
-	}
+	float EntityProperties::getYvel() const { return yvel; }
 
-	bool EntityProperties::isMoving() const
-	{
-		return xvel != 0 || yvel != 0;
-	}
+	bool EntityProperties::isMoving() const { return xvel != 0 || yvel != 0; }
 
-	SDL_Rect EntityProperties::getBoundingBox() const
-	{
-		return { x, y, w, h };
-	}
+	SDL_Rect EntityProperties::getBoundingBox() const { return { x, y, w, h }; }
 
 	void EntityProperties::setCollidable(bool collidable)
 	{
 		this->collidable = collidable;
 	}
 
-	bool EntityProperties::isCollidable() const
-	{
-		return collidable;
-	}
+	bool EntityProperties::isCollidable() const { return collidable; }
 
-	void EntityProperties::setVisible(bool visible)
-	{
-		this->visible = visible;
-	}
+	void EntityProperties::setVisible(bool visible) { this->visible = visible; }
 
-	bool EntityProperties::isVisible() const
-	{
-		return visible;
-	}
+	bool EntityProperties::isVisible() const { return visible; }
 
 	EntityShape EntityProperties::getColliderShape() const
 	{
-		return {
-			x + colliderShape.x,
-			y + colliderShape.y,
-			colliderShape.w,
-			colliderShape.h
-		};
+		return { x + colliderShape.x,
+			     y + colliderShape.y,
+			     colliderShape.w,
+			     colliderShape.h };
 	}
 
-	EntityShape EntityProperties::getCustomVelocityColliderShape(float dx, float dy) const
+	EntityShape EntityProperties::getCustomVelocityColliderShape(float dx,
+	                                                             float dy) const
 	{
 		EntityShape eShape = getColliderShape();
 		EntityShape vShape;
@@ -143,17 +113,21 @@ namespace flat2d
 		return vShape;
 	}
 
-	EntityShape EntityProperties::getVelocityColliderShape(float deltatime) const
+	EntityShape EntityProperties::getVelocityColliderShape(
+	  float deltatime) const
 	{
-		return getCustomVelocityColliderShape(xvel * deltatime, yvel * deltatime);
+		return getCustomVelocityColliderShape(xvel * deltatime,
+		                                      yvel * deltatime);
 	}
 
-	EntityShape EntityProperties::getXVelocityColliderShape(float deltatime) const
+	EntityShape EntityProperties::getXVelocityColliderShape(
+	  float deltatime) const
 	{
 		return getCustomVelocityColliderShape(xvel * deltatime, 0);
 	}
 
-	EntityShape EntityProperties::getYVelocityColliderShape(float deltatime) const
+	EntityShape EntityProperties::getYVelocityColliderShape(
+	  float deltatime) const
 	{
 		return getCustomVelocityColliderShape(0, yvel * deltatime);
 	}
@@ -178,7 +152,6 @@ namespace flat2d
 		return h - (colliderShape.y + colliderShape.h);
 	}
 
-
 	void EntityProperties::setColliderShape(EntityShape shape)
 	{
 		this->colliderShape = shape;
@@ -186,10 +159,7 @@ namespace flat2d
 
 	bool EntityProperties::containsPoint(int px, int py) const
 	{
-		return px >= x
-			&& px <= x + w
-			&& py >= y
-			&& py <= y + h;
+		return px >= x && px <= x + w && py >= y && py <= y + h;
 	}
 
 	void EntityProperties::setLocationChanged(bool changed)

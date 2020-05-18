@@ -5,8 +5,7 @@
 // #include <map>
 // #include <string>
 
-namespace flat2d
-{
+namespace flat2d {
 	/**
 	 * This is the game mixer. You can load effects and music and then play them
 	 * @author Linus Probert <linus.probert@gmail.com>

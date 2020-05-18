@@ -1,14 +1,10 @@
 #include <iostream>
 
-#include "GameControllerContainer.h"
 #include "GameController.h"
+#include "GameControllerContainer.h"
 
-namespace flat2d
-{
-	GameControllerContainer::GameControllerContainer()
-	{
-		loadControllers();
-	}
+namespace flat2d {
+	GameControllerContainer::GameControllerContainer() { loadControllers(); }
 
 	GameControllerContainer::~GameControllerContainer()
 	{
@@ -26,7 +22,7 @@ namespace flat2d
 		}
 
 		for (int i = 0; i < controllerCount; i++) {
-			GameController *controller = new GameController(i);
+			GameController* controller = new GameController(i);
 
 			if (controller->getSDLController() != nullptr) {
 				controllers.push_back(controller);

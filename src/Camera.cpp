@@ -1,32 +1,26 @@
 #include "Camera.h"
 
-namespace flat2d
-{
+namespace flat2d {
 	void Camera::setMapDimensions(int w, int h)
 	{
 		mapWidth = w;
 		mapHeight = h;
 	}
 
-	int Camera::getMapHeight()
-	{
-		return mapHeight;
-	}
+	int Camera::getMapHeight() { return mapHeight; }
 
-	int Camera::getMapWidth()
-	{
-		return mapWidth;
-	}
+	int Camera::getMapWidth() { return mapWidth; }
 
 	SDL_Rect Camera::getBox()
 	{
-		SDL_Rect box = { x, y, w, h};
+		SDL_Rect box = { x, y, w, h };
 		return box;
 	}
 
-	void Camera::centerOn(int xpos, int ypos) {
-		x = xpos - (w/2);
-		y = ypos - (h/2);
+	void Camera::centerOn(int xpos, int ypos)
+	{
+		x = xpos - (w / 2);
+		y = ypos - (h / 2);
 
 		if (x > mapWidth - w) {
 			x = mapWidth - w;
@@ -59,10 +53,8 @@ namespace flat2d
 
 	bool Camera::isOutOfMapBounds(const SDL_Rect& rect)
 	{
-		return rect.x + rect.w < 0
-			|| rect.y + rect.h < 0
-			|| rect.y > mapHeight
-			|| rect.x > mapWidth;
+		return rect.x + rect.w < 0 || rect.y + rect.h < 0 ||
+		       rect.y > mapHeight || rect.x > mapWidth;
 	}
 
 	int Camera::getScreenXposFor(int xpos, int depth) const

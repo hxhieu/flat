@@ -1,6 +1,6 @@
+#include "Mixer.h"
 #include <iostream>
 #include <string>
-#include "Mixer.h"
 
 namespace flat2d
 {

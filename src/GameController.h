@@ -3,8 +3,7 @@
 
 #include <SDL.h>
 
-namespace flat2d
-{
+namespace flat2d {
 	class GameControllerContainer;
 
 	/**
@@ -13,15 +12,15 @@ namespace flat2d
 	 */
 	class GameController
 	{
-		private:
-			SDL_GameController *controller = nullptr;
+	  private:
+		SDL_GameController* controller = nullptr;
 
-		public:
-			explicit GameController(int index);
+	  public:
+		explicit GameController(int index);
 
-			~GameController();
+		~GameController();
 
-			SDL_GameController* getSDLController();
+		SDL_GameController* getSDLController();
 	};
 } // namespace flat2d
 

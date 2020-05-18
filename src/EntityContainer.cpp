@@ -1,25 +1,21 @@
-#include <functional>
 #include <cassert>
-#include <string>
-#include <map>
-#include <vector>
 #include <cmath>
+#include <functional>
+#include <map>
+#include <string>
+#include <vector>
 
+#include "CollisionDetector.h"
+#include "DeltatimeMonitor.h"
 #include "Entity.h"
 #include "EntityContainer.h"
+#include "EntityProperties.h"
 #include "GameData.h"
 #include "RenderData.h"
-#include "EntityProperties.h"
-#include "DeltatimeMonitor.h"
-#include "CollisionDetector.h"
 #include "RuntimeAnalyzer.h"
 
-namespace flat2d
-{
-	EntityContainer::~EntityContainer()
-	{
-		unregisterAllObjects();
-	}
+namespace flat2d {
+	EntityContainer::~EntityContainer() { unregisterAllObjects(); }
 
 	void EntityContainer::addLayer(unsigned int layer)
 	{
@@ -74,18 +70,18 @@ namespace flat2d
 		}
 	}
 
-	EntityShape EntityContainer::createBoundingBoxFor(const EntityProperties& props) const
+	EntityShape EntityContainer::createBoundingBoxFor(
+	  const EntityProperties& props) const
 	{
-		EntityShape vShape = props.getVelocityColliderShape(dtMonitor->getDeltaTime());
-		return {
-			vShape.x - spatialPartitionExpansion,
-			vShape.y - spatialPartitionExpansion,
-			vShape.w + (2 * spatialPartitionExpansion),
-			vShape.h + (2 * spatialPartitionExpansion)
-		};
+		EntityShape vShape =
+		  props.getVelocityColliderShape(dtMonitor->getDeltaTime());
+		return { vShape.x - spatialPartitionExpansion,
+			     vShape.y - spatialPartitionExpansion,
+			     vShape.w + (2 * spatialPartitionExpansion),
+			     vShape.h + (2 * spatialPartitionExpansion) };
 	}
 
-	void EntityContainer::registerObjectToSpatialPartitions(Entity *o)
+	void EntityContainer::registerObjectToSpatialPartitions(Entity* o)
 	{
 		if (!o->getEntityProperties().isCollidable()) {
 			return;
@@ -95,36 +91,40 @@ namespace flat2d
 		EntityShape boundingBox = createBoundingBoxFor(props);
 
 		addObjectToSpatialPartitionFor(o, boundingBox.x, boundingBox.y);
-		addObjectToSpatialPartitionFor(o, boundingBox.x, boundingBox.y + boundingBox.h);
-		addObjectToSpatialPartitionFor(o, boundingBox.x + boundingBox.w, boundingBox.y);
-		addObjectToSpatialPartitionFor(o, boundingBox.x + boundingBox.w, boundingBox.y + boundingBox.h);
+		addObjectToSpatialPartitionFor(
+		  o, boundingBox.x, boundingBox.y + boundingBox.h);
+		addObjectToSpatialPartitionFor(
+		  o, boundingBox.x + boundingBox.w, boundingBox.y);
+		addObjectToSpatialPartitionFor(
+		  o, boundingBox.x + boundingBox.w, boundingBox.y + boundingBox.h);
 
 		if (boundingBox.w > static_cast<int>(spatialPartitionDimension)) {
 			for (int i = boundingBox.x + spatialPartitionDimension;
-					i < boundingBox.x + boundingBox.w;
-					i += spatialPartitionDimension)
-			{
+			     i < boundingBox.x + boundingBox.w;
+			     i += spatialPartitionDimension) {
 				addObjectToSpatialPartitionFor(o, i, boundingBox.y);
-				addObjectToSpatialPartitionFor(o, i, boundingBox.y + boundingBox.h);
+				addObjectToSpatialPartitionFor(
+				  o, i, boundingBox.y + boundingBox.h);
 			}
 		}
 
 		if (boundingBox.h > static_cast<int>(spatialPartitionDimension)) {
 			for (int i = boundingBox.y + spatialPartitionDimension;
-					i < boundingBox.h + boundingBox.h;
-					i += spatialPartitionDimension)
-			{
+			     i < boundingBox.h + boundingBox.h;
+			     i += spatialPartitionDimension) {
 				addObjectToSpatialPartitionFor(o, boundingBox.x, i);
-				addObjectToSpatialPartitionFor(o, boundingBox.x + boundingBox.w, i);
+				addObjectToSpatialPartitionFor(
+				  o, boundingBox.x + boundingBox.w, i);
 			}
 		}
 
 		props.setLocationChanged(false);
 	}
 
-	void EntityContainer::clearObjectFromCurrentPartitions(Entity *o)
+	void EntityContainer::clearObjectFromCurrentPartitions(Entity* o)
 	{
-		EntityProperties::Areas& currentAreas = o->getEntityProperties().getCurrentAreas();
+		EntityProperties::Areas& currentAreas =
+		  o->getEntityProperties().getCurrentAreas();
 		for (auto it = currentAreas.begin(); it != currentAreas.end(); it++) {
 			spatialPartitionMap[*it].erase(o->getStringId());
 		}
@@ -132,20 +132,21 @@ namespace flat2d
 		currentAreas.clear();
 	}
 
-	void EntityContainer::clearObjectFromUnattachedPartitions(Entity *o)
+	void EntityContainer::clearObjectFromUnattachedPartitions(Entity* o)
 	{
 		// TODO(Linus): This is bugging out. Fix later for optimization.
-		EntityProperties::Areas& currentAreas = o->getEntityProperties().getCurrentAreas();
+		EntityProperties::Areas& currentAreas =
+		  o->getEntityProperties().getCurrentAreas();
 		EntityShape bounder = createBoundingBoxFor(o->getEntityProperties());
 
 		std::vector<int> indexes;
 		int index = 0;
 		for (auto it = currentAreas.begin(); it != currentAreas.end(); it++) {
-			if (!it->containsPoint(bounder.x, bounder.y)
-					&& !it->containsPoint(bounder.x, bounder.y + bounder.h)
-					&& !it->containsPoint(bounder.x + bounder.w, bounder.y)
-					&& !it->containsPoint(bounder.x + bounder.w, bounder.y + bounder.h))
-			{
+			if (!it->containsPoint(bounder.x, bounder.y) &&
+			    !it->containsPoint(bounder.x, bounder.y + bounder.h) &&
+			    !it->containsPoint(bounder.x + bounder.w, bounder.y) &&
+			    !it->containsPoint(bounder.x + bounder.w,
+			                       bounder.y + bounder.h)) {
 				spatialPartitionMap[*it].erase(o->getStringId());
 				indexes.push_back(index++);
 			}
@@ -156,7 +157,9 @@ namespace flat2d
 		}
 	}
 
-	void EntityContainer::addObjectToSpatialPartitionFor(Entity* o, int x, int y)
+	void EntityContainer::addObjectToSpatialPartitionFor(Entity* o,
+	                                                     int x,
+	                                                     int y)
 	{
 		std::string objId = o->getStringId();
 
@@ -170,7 +173,8 @@ namespace flat2d
 		}
 
 		// The object is already in this partition
-		if (spatialPartitionMap[area].find(objId) != spatialPartitionMap[area].end()) {
+		if (spatialPartitionMap[area].find(objId) !=
+		    spatialPartitionMap[area].end()) {
 			return;
 		}
 
@@ -197,7 +201,8 @@ namespace flat2d
 
 		clearObjectFromCurrentPartitions(object);
 
-		for (auto it = layeredObjects.begin(); it != layeredObjects.end(); it++) {
+		for (auto it = layeredObjects.begin(); it != layeredObjects.end();
+		     it++) {
 			it->second.erase(objId);
 		}
 	}
@@ -216,7 +221,7 @@ namespace flat2d
 
 	void EntityContainer::unregisterAllObjects()
 	{
-		for(auto it = objects.begin(); it != objects.end(); it++) {
+		for (auto it = objects.begin(); it != objects.end(); it++) {
 			delete it->second;
 		}
 		uninitiatedEntities.clear();
@@ -233,7 +238,9 @@ namespace flat2d
 			return;
 		}
 
-		for (auto it = layeredObjects[layer].begin(); it != layeredObjects[layer].end(); it++) {
+		for (auto it = layeredObjects[layer].begin();
+		     it != layeredObjects[layer].end();
+		     it++) {
 			std::string objId = it->second->getStringId();
 			objects.erase(objId);
 			inputHandlers.erase(objId);
@@ -247,18 +254,21 @@ namespace flat2d
 		layeredObjects[layer].clear();
 	}
 
-	void EntityContainer::initiateEntities(const GameData *gameData)
+	void EntityContainer::initiateEntities(const GameData* gameData)
 	{
 #ifdef FPS_DBG
 		TIME_FUNCTION;
 #endif
-		for (auto it = uninitiatedEntities.begin(); it != uninitiatedEntities.end(); it++) {
+		for (auto it = uninitiatedEntities.begin();
+		     it != uninitiatedEntities.end();
+		     it++) {
 			it->second->init(gameData);
 		}
 		uninitiatedEntities.clear();
 	}
 
-	void EntityContainer::handleObjects(const SDL_Event& event, const GameData* gameData)
+	void EntityContainer::handleObjects(const SDL_Event& event,
+	                                    const GameData* gameData)
 	{
 #ifdef FPS_DBG
 		TIME_FUNCTION;
@@ -278,8 +288,10 @@ namespace flat2d
 #ifdef FPS_DBG
 		TIME_FUNCTION;
 #endif
-		for (auto it1 = layeredObjects.begin(); it1 != layeredObjects.end(); it1++) {
-			for (auto it2 = it1->second.begin(); it2 != it1->second.end(); it2++) {
+		for (auto it1 = layeredObjects.begin(); it1 != layeredObjects.end();
+		     it1++) {
+			for (auto it2 = it1->second.begin(); it2 != it1->second.end();
+			     it2++) {
 				if (isUninitiated(it2->first)) {
 					continue;
 				}
@@ -296,7 +308,7 @@ namespace flat2d
 		TIME_FUNCTION;
 #endif
 		float deltatime = dtMonitor->getDeltaTime();
-		CollisionDetector *coldetector = data->getCollisionDetector();
+		CollisionDetector* coldetector = data->getCollisionDetector();
 
 		for (auto& object : objects) {
 			if (isUninitiated(object.first)) {
@@ -308,7 +320,8 @@ namespace flat2d
 			EntityProperties& props = object.second->getEntityProperties();
 			if (props.isMoving()) {
 				if (props.isCollidable()) {
-					coldetector->handlePossibleCollisionsFor(object.second, data);
+					coldetector->handlePossibleCollisionsFor(object.second,
+					                                         data);
 				}
 				props.move(deltatime);
 				handlePossibleObjectMovement(object.second);
@@ -323,10 +336,10 @@ namespace flat2d
 
 	void EntityContainer::handlePossibleObjectMovement(Entity* entity)
 	{
-		// TODO(Linus): Maybe this should be replaced by the previous callback function that was
-		// injected into the objects entity properties???
-		// Multiple calls to this function seems wasteful although it filters nicely with the
-		// hasLocationChanged flag.
+		// TODO(Linus): Maybe this should be replaced by the previous callback
+		// function that was injected into the objects entity properties???
+		// Multiple calls to this function seems wasteful although it filters
+		// nicely with the hasLocationChanged flag.
 		if (entity->getEntityProperties().hasLocationChanged()) {
 			clearObjectFromCurrentPartitions(entity);
 			registerObjectToSpatialPartitions(entity);
@@ -334,10 +347,7 @@ namespace flat2d
 		}
 	}
 
-	size_t EntityContainer::getObjectCount() const
-	{
-		return objects.size();
-	}
+	size_t EntityContainer::getObjectCount() const { return objects.size(); }
 
 	size_t EntityContainer::getObjectCountFor(Layer layer)
 	{
@@ -362,7 +372,9 @@ namespace flat2d
 			}
 			std::string objId = it->first;
 			collidableObjects.erase(objId);
-			for (auto layerIt = layeredObjects.begin(); layerIt != layeredObjects.end(); layerIt++) {
+			for (auto layerIt = layeredObjects.begin();
+			     layerIt != layeredObjects.end();
+			     layerIt++) {
 				layerIt->second.erase(objId);
 			}
 			clearObjectFromCurrentPartitions(it->second);
@@ -370,7 +382,8 @@ namespace flat2d
 			delete it->second;
 		}
 
-		for (auto it = objectsToErase.begin(); it != objectsToErase.end(); it++) {
+		for (auto it = objectsToErase.begin(); it != objectsToErase.end();
+		     it++) {
 			objects.erase(*it);
 		}
 	}
@@ -389,11 +402,14 @@ namespace flat2d
 		}
 	}
 
-	void EntityContainer::iterateCollidablesFor(const Entity* source, EntityIter func)
+	void EntityContainer::iterateCollidablesFor(const Entity* source,
+	                                            EntityIter func)
 	{
-		const EntityProperties::Areas& currentAreas = source->getEntityProperties().getCurrentAreas();
+		const EntityProperties::Areas& currentAreas =
+		  source->getEntityProperties().getCurrentAreas();
 		std::map<float, Entity*> sortedMap;
-		EntityShape colliderShape = source->getEntityProperties().getColliderShape();
+		EntityShape colliderShape =
+		  source->getEntityProperties().getColliderShape();
 		float sx = static_cast<float>(colliderShape.x + (colliderShape.w / 2));
 		float sy = static_cast<float>(colliderShape.y + (colliderShape.h / 2));
 
@@ -407,9 +423,12 @@ namespace flat2d
 					continue;
 				}
 
-				const EntityShape& targetShape = object.second->getEntityProperties().getColliderShape();
-				float tx = static_cast<float>(targetShape.x + (targetShape.w/2));
-				float ty = static_cast<float>(targetShape.y + (targetShape.h/2));
+				const EntityShape& targetShape =
+				  object.second->getEntityProperties().getColliderShape();
+				float tx =
+				  static_cast<float>(targetShape.x + (targetShape.w / 2));
+				float ty =
+				  static_cast<float>(targetShape.y + (targetShape.h / 2));
 
 				float distance;
 				if (sx == tx) {
@@ -435,7 +454,8 @@ namespace flat2d
 		}
 
 		// Itterate the sorted objects and call the cb function
-		for (auto objectIter = sortedMap.begin(); objectIter != sortedMap.end(); objectIter++) {
+		for (auto objectIter = sortedMap.begin(); objectIter != sortedMap.end();
+		     objectIter++) {
 			func(objectIter->second);
 		}
 	}
@@ -450,9 +470,11 @@ namespace flat2d
 		return nullptr;
 	}
 
-	Entity* EntityContainer::checkAllCollidableObjects(EntityProcessor func) const
+	Entity* EntityContainer::checkAllCollidableObjects(
+	  EntityProcessor func) const
 	{
-		for (auto it = collidableObjects.begin(); it != collidableObjects.end(); it++) {
+		for (auto it = collidableObjects.begin(); it != collidableObjects.end();
+		     it++) {
 			if (func(it->second)) {
 				return it->second;
 			}
@@ -460,15 +482,19 @@ namespace flat2d
 		return nullptr;
 	}
 
-	Entity* EntityContainer::checkCollidablesFor(const Entity* source, EntityProcessor func)
+	Entity* EntityContainer::checkCollidablesFor(const Entity* source,
+	                                             EntityProcessor func)
 	{
-		const EntityProperties::Areas& currentAreas = source->getEntityProperties().getCurrentAreas();
-		for (auto areaIter = currentAreas.begin(); areaIter != currentAreas.end(); areaIter++) {
+		const EntityProperties::Areas& currentAreas =
+		  source->getEntityProperties().getCurrentAreas();
+		for (auto areaIter = currentAreas.begin();
+		     areaIter != currentAreas.end();
+		     areaIter++) {
 			for (auto objectIter = spatialPartitionMap[*areaIter].begin();
-					objectIter != spatialPartitionMap[*areaIter].end();
-					objectIter++)
-			{
-				if (objectIter->second->getEntityProperties().isCollidable() && func(objectIter->second)) {
+			     objectIter != spatialPartitionMap[*areaIter].end();
+			     objectIter++) {
+				if (objectIter->second->getEntityProperties().isCollidable() &&
+				    func(objectIter->second)) {
 					return objectIter->second;
 				}
 			}
@@ -482,7 +508,9 @@ namespace flat2d
 			return;
 		}
 
-		for (auto it = layeredObjects[layer].begin(); it != layeredObjects[layer].end(); it++) {
+		for (auto it = layeredObjects[layer].begin();
+		     it != layeredObjects[layer].end();
+		     it++) {
 			if (it->second->getEntityProperties().isCollidable()) {
 				func(it->second);
 			}

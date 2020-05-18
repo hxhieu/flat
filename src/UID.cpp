@@ -1,7 +1,6 @@
 #include "UID.h"
 
-namespace flat2d
-{
+namespace flat2d {
 	size_t UID::uid = 1;
 	SpinLock UID::lock;
 

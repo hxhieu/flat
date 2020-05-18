@@ -1,15 +1,13 @@
-#include <SDL.h>
 #include "Timer.h"
+#include <SDL.h>
 
-namespace flat2d
-{
+namespace flat2d {
 	Timer::Timer()
-	{
-		started = false;
-		paused = false;
-		startTicks = 0;
-		pausedTicks = 0;
-	}
+	  : started(false)
+	  , paused(false)
+	  , startTicks(0)
+	  , pausedTicks(0)
+	{}
 
 	void Timer::start()
 	{
@@ -57,14 +55,7 @@ namespace flat2d
 		}
 	}
 
+	bool Timer::isStarted() const { return started; }
 
-	bool Timer::isStarted() const
-	{
-		return started;
-	}
-
-	bool Timer::isPaused() const
-	{
-		return paused;
-	}
+	bool Timer::isPaused() const { return paused; }
 } // namespace flat2d
